@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Atlas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Left Side Display (Hidden on Mobile) -->
+        <section class="auth-hero">
+            <div class="hero-brand">
+                <svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                </svg>
+                <span class="brand-name">Atlas</span>
+            </div>
+            
+            <div class="hero-main">
+                <h2 class="hero-title" id="typewriter-title" data-text="Atlas, A smart Ad request analyzer.">Atlas, A smart Ad request analyzer.</h2>
+                <p class="hero-desc">Better insights, better revenue</p>
+            </div>
+            
+            <div class="hero-footer">
+                &copy; {{ current_year if current_year else "2025" }} Atlas Technologies Inc. All rights reserved.
+            </div>
+        </section>
+
+        <!-- Right Side Interface -->
+        <main class="auth-form-side">
+            <div class="auth-card">
+                <header class="form-header">
+                    <h1 class="form-title">{{ title }}</h1>
+                    <p class="form-subtitle">Enter your details to manage programmatic settings</p>
+                </header>
+
+                <!-- Status Alerts -->
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    {% for message in messages %}
+                      {% if "successfully" in message %}
+                        <div class="message-box success" role="alert">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            <span>{{ message }}</span>
+                        </div>
+                      {% else %}
+                        <div class="message-box error" role="alert">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                            <span>{{ message }}</span>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
+                <form method="POST" id="authForm">
+                    <div class="form-group">
+                        <label for="email" class="form-label"> Enter Email Address</label>
+                        <div class="input-container">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                            </svg>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="name@company.com" required autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-container">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">Show</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span>{{ button_text }}</span>
+                    </button>
+                </form>
+
+                <div class="toggle-link">
+                    {% if is_login_page %}
+                        New to Atlas? <a href="{{ url_for('register') }}">Create an account</a>
+                    {% else %}
+                        Already registered? <a href="{{ url_for('login') }}">Sign in here</a>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const authForm = document.getElementById('authForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Toggle Password Field Visiblity State
+        if (passwordToggle && passwordInput) {
+            passwordToggle.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                passwordToggle.textContent = isPassword ? 'Hide' : 'Show';
+            });
+        }
+
+        // Action loading indicator on submit
+        if (authForm && submitBtn) {
+            authForm.addEventListener('submit', () => {
+                submitBtn.style.opacity = '0.8';
+                submitBtn.style.pointerEvents = 'none';
+                submitBtn.innerHTML = 'Processing...';
+            });
+        }
+
+        // Typewriter Effect for Title
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleEl = document.getElementById('typewriter-title');
+            if (titleEl) {
+                const text = titleEl.getAttribute('data-text') || titleEl.textContent;
+                let index = 0;
+                titleEl.textContent = ''; // Clear fallback text
+                titleEl.classList.add('typing');
+
+                function type() {
+                    if (index < text.length) {
+                        titleEl.textContent += text.charAt(index);
+                        index++;
+                        setTimeout(type, 50); // Speed of typing in milliseconds
+                    } else {
+                        titleEl.classList.remove('typing'); // Remove blinking cursor when done
+                    }
+                }
+                setTimeout(type, 300); // Initial delay before typing starts
+            }
+        });
+    </script>
+</body>
+</html>
